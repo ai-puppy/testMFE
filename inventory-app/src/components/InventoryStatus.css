@@ -1,0 +1,69 @@
+.inventory-status {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  border-radius: 6px;
+  margin-top: 10px;
+  font-size: 14px;
+  background: #f8f9fa;
+  border: 1px solid #dee2e6;
+}
+
+.status-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  display: inline-block;
+}
+
+.status-text {
+  flex: 1;
+  font-weight: 500;
+}
+
+.status-badge {
+  font-size: 11px;
+  background: #17a2b8;
+  color: white;
+  padding: 2px 6px;
+  border-radius: 3px;
+  font-weight: 600;
+}
+
+/* Stock level styles */
+.inventory-status.high .status-dot {
+  background: #28a745;
+}
+
+.inventory-status.high {
+  border-color: #28a745;
+  background: #d4edda;
+}
+
+.inventory-status.medium .status-dot {
+  background: #ffc107;
+}
+
+.inventory-status.medium {
+  border-color: #ffc107;
+  background: #fff3cd;
+}
+
+.inventory-status.low .status-dot {
+  background: #fd7e14;
+}
+
+.inventory-status.low {
+  border-color: #fd7e14;
+  background: #ffe5d0;
+}
+
+.inventory-status.out-of-stock .status-dot {
+  background: #dc3545;
+}
+
+.inventory-status.out-of-stock {
+  border-color: #dc3545;
+  background: #f8d7da;
+}
