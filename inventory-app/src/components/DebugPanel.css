@@ -1,0 +1,62 @@
+.debug-panel {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  background: white;
+  border: 2px solid #17a2b8;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  z-index: 1000;
+}
+
+.debug-toggle {
+  background: #17a2b8;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.debug-toggle:hover {
+  background: #138496;
+}
+
+.debug-content {
+  padding: 20px;
+  min-width: 250px;
+}
+
+.debug-content h3 {
+  margin: 0 0 15px 0;
+  color: #333;
+}
+
+.inventory-state {
+  background: #f8f9fa;
+  padding: 15px;
+  border-radius: 4px;
+  margin-bottom: 15px;
+}
+
+.state-item {
+  padding: 5px 0;
+  font-family: monospace;
+  color: #495057;
+}
+
+.clear-button {
+  background: #dc3545;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: 600;
+  width: 100%;
+}
+
+.clear-button:hover {
+  background: #c82333;
+}

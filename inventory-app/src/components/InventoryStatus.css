@@ -8,6 +8,8 @@
   font-size: 14px;
   background: #f8f9fa;
   border: 1px solid #dee2e6;
+  min-height: 40px;
+  box-sizing: border-box;
 }
 
 .status-dot {

@@ -1,7 +1,10 @@
-import React, { Suspense, lazy, useState } from 'react';
+import React, { Suspense, lazy, useState, useEffect } from 'react';
 import ProductCard from './components/ProductCard';
 import InventoryStatus from './components/InventoryStatus';
+import DebugPanel from './components/DebugPanel';
 import { Product } from './types';
+import { inventorySync } from './services/inventorySync';
+import { INITIAL_INVENTORY } from './config/initialInventory';
 import './App.css';
 
 // Lazy load remote components with error handling
@@ -30,8 +33,8 @@ const mockInventory: Product[] = [
     price: 1299.99,
     description: 'High-performance laptop for professionals',
     category: 'Electronics',
-    image: 'https://via.placeholder.com/200x200/007bff/ffffff?text=Laptop',
-    stock: 10
+    image: 'https://images.unsplash.com/photo-1496181133206-80ce9b88a853?w=200&h=200&fit=crop',
+    stock: INITIAL_INVENTORY['1']
   },
   {
     id: '2',
@@ -39,8 +42,8 @@ const mockInventory: Product[] = [
     price: 49.99,
     description: 'Ergonomic wireless mouse with precision tracking',
     category: 'Accessories',
-    image: 'https://via.placeholder.com/200x200/28a745/ffffff?text=Mouse',
-    stock: 3 // Low stock
+    image: 'https://images.unsplash.com/photo-1527864550417-7fd91fc51a46?w=200&h=200&fit=crop',
+    stock: INITIAL_INVENTORY['2']
   },
   {
     id: '3',
@@ -48,8 +51,8 @@ const mockInventory: Product[] = [
     price: 79.99,
     description: '7-in-1 USB-C hub with multiple ports',
     category: 'Accessories',
-    image: 'https://via.placeholder.com/200x200/dc3545/ffffff?text=Hub',
-    stock: 0 // Out of stock
+    image: 'https://images.unsplash.com/photo-1625948515291-69613efd103f?w=200&h=200&fit=crop',
+    stock: INITIAL_INVENTORY['3']
   },
   {
     id: '4',
@@ -57,8 +60,8 @@ const mockInventory: Product[] = [
     price: 159.99,
     description: 'RGB mechanical keyboard with cherry switches',
     category: 'Accessories',
-    image: 'https://via.placeholder.com/200x200/ffc107/ffffff?text=Keyboard',
-    stock: 15
+    image: 'https://images.unsplash.com/photo-1587829741301-dc798b83add3?w=200&h=200&fit=crop',
+    stock: INITIAL_INVENTORY['4']
   },
   {
     id: '5',
@@ -66,8 +69,8 @@ const mockInventory: Product[] = [
     price: 599.99,
     description: '27-inch 4K IPS monitor with HDR',
     category: 'Electronics',
-    image: 'https://via.placeholder.com/200x200/6f42c1/ffffff?text=Monitor',
-    stock: 7
+    image: 'https://images.unsplash.com/photo-1527443224154-c4a3942d3acf?w=200&h=200&fit=crop',
+    stock: INITIAL_INVENTORY['5']
   }
 ];
 
@@ -75,14 +78,63 @@ const App: React.FC = () => {
   const [inventory, setInventory] = useState(mockInventory);
   const [showStoreCart, setShowStoreCart] = useState(false);
 
+  // Initialize and sync inventory state
+  useEffect(() => {
+    // Check if inventory state already exists in localStorage
+    const existingInventory = inventorySync.getInventory();
+    
+    if (Object.keys(existingInventory).length === 0) {
+      // No existing inventory, save our initial state
+      const initialInventory: Record<string, number> = {};
+      inventory.forEach(product => {
+        initialInventory[product.id] = product.stock;
+      });
+      inventorySync.saveInventory(initialInventory);
+    } else {
+      // Use existing inventory state
+      setInventory(prevInventory => 
+        prevInventory.map(product => ({
+          ...product,
+          stock: existingInventory[product.id] !== undefined ? existingInventory[product.id] : product.stock
+        }))
+      );
+    }
+
+    // Subscribe to inventory updates from other apps
+    const unsubscribe = inventorySync.subscribe((event) => {
+      console.log('Inventory App: Received inventory update', event);
+      
+      if (event.productId === 'all') {
+        // Full inventory refresh
+        const savedInventory = inventorySync.getInventory();
+        setInventory(prevInventory => 
+          prevInventory.map(product => ({
+            ...product,
+            stock: savedInventory[product.id] !== undefined ? savedInventory[product.id] : product.stock
+          }))
+        );
+      } else {
+        // Single product update
+        setInventory(prevInventory => 
+          prevInventory.map(product => 
+            product.id === event.productId 
+              ? { ...product, stock: event.stock }
+              : product
+          )
+        );
+      }
+    });
+
+    return unsubscribe;
+  }, []);
+
   const updateStock = (productId: string, change: number) => {
-    setInventory(prev => 
-      prev.map(product => 
-        product.id === productId 
-          ? { ...product, stock: Math.max(0, product.stock + change) }
-          : product
-      )
-    );
+    const product = inventory.find(p => p.id === productId);
+    if (product) {
+      const newStock = Math.max(0, product.stock + change);
+      // Use the sync service to update inventory (handles everything)
+      inventorySync.updateInventory(productId, newStock);
+    }
   };
 
   return (
@@ -153,6 +205,7 @@ const App: React.FC = () => {
           </section>
         )}
       </main>
+      <DebugPanel />
     </div>
   );
 };

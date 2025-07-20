@@ -91,6 +91,12 @@ header h1 {
   margin-bottom: 30px;
 }
 
+.product-item-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
 .product-card {
   background: white;
   border-radius: 8px;
@@ -166,4 +172,35 @@ header h1 {
 
 .cart-section {
   margin-top: 30px;
+}
+
+.inventory-fallback {
+  padding: 10px;
+  background: #f8f9fa;
+  border: 1px solid #dee2e6;
+  border-radius: 6px;
+  text-align: center;
+  color: #666;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  justify-content: center;
+  min-height: 40px;
+}
+
+.inventory-fallback .status-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #6c757d;
+  display: inline-block;
+}
+
+.loading-status {
+  padding: 10px;
+  background: #e3f2fd;
+  border: 1px solid #90caf9;
+  border-radius: 6px;
+  text-align: center;
+  color: #1976d2;
 }
